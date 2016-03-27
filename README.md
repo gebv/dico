@@ -1,4 +1,4 @@
-# dynamo
+# dico
 text generator from template and сonfig
 
 Any text generation. For example code of programm
