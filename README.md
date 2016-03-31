@@ -30,3 +30,9 @@ package entity
 
 var Foo string
 ```
+
+See more [examples](examples)
+
+# TODO
+
+* parse all files in the folder by pattern (example `dico src/*.go`)
