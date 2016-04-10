@@ -1,5 +1,5 @@
 {{define "struct" }}
-// {{.name}} {{.comment}}
+{{with .comment }}// {{.name}} {{.comment}}{{end}}
 type {{.name}} struct {
     {{ range $key, $field := .fields }}
     {{with $field.comment}}// {{$field.comment}}{{end}}

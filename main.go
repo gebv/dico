@@ -10,10 +10,11 @@ import (
     "bytes"
     "io/ioutil"
     "text/template"
+    "path/filepath"
 )
 
 var (
-    Version = "0.0.1"
+    Version = "0.0.2"
     
     CommentLine = "//"
     CommentBlockStart = "/*"
@@ -28,7 +29,7 @@ var (
     
     HelpMessage = "The text in the section 'AUTOGENERATE.DICO' automatically generated, please do not edit it"
     
-    DEBUG = true
+    DEBUG = false
 )
 
 var HelpfullTemplateFuncs = template.FuncMap{
@@ -36,8 +37,8 @@ var HelpfullTemplateFuncs = template.FuncMap{
 }
 
 func NewGenerator(args []string, config *Config) (*Generator, error) {
-    if len(args) != 2 {
-        return nil, fmt.Errorf("not valid command arguments");
+    if len(args) < 2 {
+        return nil, fmt.Errorf("not valid command arguments %v", args);
     }
     
     // // TODO: check template errors
@@ -46,29 +47,35 @@ func NewGenerator(args []string, config *Config) (*Generator, error) {
     
     // TODO: check file 
     
-    b, err := ioutil.ReadFile(args[1])
+    // b, err := ioutil.ReadFile(args[0])
     
-    if err != nil {
-        return nil, err
-    }
+    // if err != nil {
+    //     return nil, err
+    // }
     
-    s := string(b)
+    // s := string(b)
     
-    // parse execute file
-    tpl, err = template.New("").Funcs(HelpfullTemplateFuncs).Parse(s)
+    // // parse execute file
+    tpl = template.New(args[0]).Funcs(HelpfullTemplateFuncs)
+    // tpl, err = template.New(args[0]).Funcs(HelpfullTemplateFuncs).Parse(s)
     
-    if err != nil {
-        return nil, err
-    }
+    // if err != nil {
+    //     return nil, err
+    // }
     
     // parse tempaltes
-    tpl, err = tpl.ParseGlob(args[0])
+    pwd, _ := os.Getwd()
+    for _, tplpath := range args[1:]{
+        tpl, err = tpl.ParseGlob(pwd + string(os.PathSeparator) + tplpath)
+    }
     
     if err != nil {
         return nil, err
     }
     
     tpl = template.Must(tpl, err)
+    
+    config.TplName = args[0]
     
     return &Generator{config, tpl}, nil
 }
@@ -83,7 +90,12 @@ func (g *Generator) Compile() (string, error) {
     
     g.Config.Config["ENV"] = g.Config.Env
     
-    if err := g.Tpl.Execute(b, g.Config.Config); err != nil {
+    // if err := g.Tpl.Execute(b, g.Config.Config); err != nil {
+        
+    //     return "", err
+    // }
+    
+    if err := g.Tpl.ExecuteTemplate(b, g.Config.TplName, g.Config.Config); err != nil {
         
         return "", err
     }
@@ -118,7 +130,9 @@ func NewConfig(typeName string, configRaw string) *Config {
 }
 
 type Config struct {
-    Type string
+    TplName string // output template name
+     
+    Type string // type config toml or ...
     ConfigRaw string
     
     Config map[string]interface{}
@@ -224,14 +238,18 @@ NEXT:
                             break
                         }
                         
+                        
+                        
                         fmt.Fprintln(config, removeCommentSymbols(scanner.Text()))
                     }
                     
                     EmbeddedConfig = NewConfig(typeConfig, config.String());
                     
-                    if !scanner.Scan() {
-                        return buff.Bytes(), fmt.Errorf("unexpected ending")
-                    }
+                    scanner.Scan()
+                    // if !scanner.Scan() {
+                        
+                    //     return buff.Bytes(), fmt.Errorf("unexpected ending")
+                    // }
                 }
                 
                 if isStartCodeGenerated(scanner.Text()) {
@@ -253,7 +271,10 @@ NEXT:
                 
                 err := EmbeddedConfig.BuildConfig()
                 
-                fmt.Fprintln(buff, CommentLine + "[DICO.CONFIG]:\t" + fmt.Sprintf("%+v", EmbeddedConfig.Config))
+                // for debug
+                if DEBUG {
+                   fmt.Fprintln(buff, CommentLine + "[DICO.CONFIG]:\t" + fmt.Sprintf("%+v", EmbeddedConfig.Config)) 
+                } 
                 
                 if err != nil && DEBUG {
                     fmt.Fprintln(buff, CommentLine + "[DICO.ERRORS.COMPLIE_CONFIG]:\t" + err.Error())    
@@ -300,13 +321,30 @@ NEXT:
     return buff.Bytes(), nil
 }
 
-func main() {    
-    app := cli.NewApp()
-    app.Action = func(c *cli.Context) {
-        file := c.Args().Get(0)
+func analyzeFile(pattern string) func (fp string, fi os.FileInfo, err error) error {
+    return func (fp string, fi os.FileInfo, err error) error {
+        // https://rosettacode.org/wiki/Walk_a_directory/Recursively#Go
         
-        if out, err := analyzeAndGenerate(file); err == nil {
-            err := ioutil.WriteFile(file, out, 0644)
+        if err != nil {
+            fmt.Println(err) // can't walk here,
+            return nil       // but continue walking elsewhere
+        }
+        if fi.IsDir() {
+            return nil // not a file.  ignore.
+        }
+        
+        matched, err := filepath.Match(pattern, fi.Name())
+        
+        if err != nil {
+            fmt.Println(err) // malformed pattern
+            return err       // this is fatal.
+        }
+        if !matched {
+            return nil
+        }
+        
+        if out, err := analyzeAndGenerate(fp); err == nil {
+            err := ioutil.WriteFile(fp, out, 0644)
             if err != nil {
                 fmt.Println(err)
             }
@@ -314,17 +352,29 @@ func main() {
             fmt.Println(err)
         }
         
+        return nil
     }
+} 
 
+func main() {    
+    app := cli.NewApp()
+    app.Action = func(c *cli.Context) {
+        path := c.Args().Get(0)
+        
+        filepath.Walk(path, analyzeFile(c.Args().Get(1)))
+    }
+    
+    fmt.Printf("%v\n", os.Args)
+    
     app.Run(os.Args)
 }
 
 
 /*
-//dico --t=example
-
-console.log("start");
-//dico --t=example2
-
-console.log("end");
+//dico main templates/golang/*
+//AUTOGENERATE.DICO>>>
+//	The text in the section 'AUTOGENERATE.DICO' automatically generated, please do not edit it
+//[DICO.VERSION]:	 0.0.1
+//[DICO.COMMAND]:	  main templates/golang/*
+//<<<AUTOGENERATE.DICO
 */

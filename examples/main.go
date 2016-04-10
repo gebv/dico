@@ -1,4 +1,4 @@
-//dico ../templates/golang/* main.go.tpl
+//dico main templates/golang/*
 //config.toml
 //pkg = "main"
 //[values]
@@ -17,9 +17,9 @@
 //config.toml
 //AUTOGENERATE.DICO>>>
 //	The text in the section 'AUTOGENERATE.DICO' automatically generated, please do not edit it
-//[DICO.VERSION]:	 0.0.1
-//[DICO.COMMAND]:	  ../templates/golang/* main.go.tpl
-//[DICO.CONFIG]:	map[pkg:main values:map[foo:Foo bar:Bar] struct:map[name:FooBarStruct fields:[map[comment:comment name:Foo type:string tag:json:"Foo"] map[name:Bar type:string]]]]
+//[DICO.VERSION]:	 0.0.2
+//[DICO.COMMAND]:	  main templates/golang/*
+
 package main
 
 import (
@@ -27,7 +27,7 @@ import (
 )
 
 
-// FooBarStruct <no value>
+
 type FooBarStruct struct {
     
     // comment
@@ -43,5 +43,6 @@ func main() {
     s := &FooBarStruct{"Foo", "Bar"}
     fmt.Printf("%v", s)
 }
+
 //<<<AUTOGENERATE.DICO
 
