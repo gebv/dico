@@ -1,4 +1,14 @@
 {{define "struct" }}
+func New{{toUpper .name}}() *{{.name}} {
+    model := new({{.name}})
+    {{ range $key, $field := .fields}}
+    {{if hasPrefix $field.type "map"}}
+    model.{{$field.name}} = make({{$field.type}})
+    {{end}}  
+    {{ end }}
+    return model
+}
+
 {{- with .comment }}// {{.name}} {{.comment}}{{end}}
 type {{.name}} struct {
     {{ range $key, $field := .fields}}
