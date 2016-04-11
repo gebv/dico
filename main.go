@@ -12,6 +12,7 @@ import (
     "text/template"
     "path/filepath"
     "unicode"
+    "regexp"
 )
 
 var (
@@ -34,7 +35,58 @@ var (
 )
 
 var HelpfullTemplateFuncs = template.FuncMap{
+    "regexp": func (s, r string) []string {
+        // map\\[(?P<key>[a-zA-Z0-9{}]+)\\](?P<item>[a-zA-Z0-9{}]+)
+        re := regexp.MustCompile(r)
+	    // re.SubexpNames()
+	    return re.FindStringSubmatch(s)
+    },
+    "substring": func (s string, ii ...int) string {
+        if len(ii) == 0 {
+            return s
+        }
+        
+        var start = 0
+        var end = len(s)
+        
+        if len(ii) >= 1 {
+            start = ii[0]
+        }
+        
+        if start < 0 || start > len(s){
+            start = 0
+        }
+        
+        if len(ii) == 2 {
+            end = ii[1]
+        }
+        
+        if end < 0 || end > len(s) {
+            end = len(s)
+        }
+        
+        if start > end && len(ii) == 2 {
+            start = 0
+            end = len(s)
+        }
+        
+        return s[start:end]
+    },
     "intersection": func (v interface{}, vv ...interface{}) bool {
+        switch vv[0].(type) {
+            case func(string, string) bool:
+                fn := vv[0].(func(string) bool)
+                
+                // TODO: check type string
+                
+                for _, _v := range vv {
+                    if fn(_v.(string)) {
+                        return true
+                    }
+                }
+            default:
+        }
+        
         for _, _v := range vv {
             if _v == v {
                 return true
@@ -42,6 +94,24 @@ var HelpfullTemplateFuncs = template.FuncMap{
         }
         
         return false
+    },
+    "hasPrefix": func (s1, s2 string) bool {
+        
+        return strings.HasPrefix(s1, s2)
+    },
+    "fnHasPrefix": func(prefix string) func(string) bool {
+        return func (s1 string) bool {
+            return strings.HasPrefix(s1, prefix)
+        }
+    },
+    "hasSuffix": func (s1, s2 string) bool {
+        
+        return strings.HasSuffix(s1, s2)
+    },
+    "fnHasSuffix": func(suffix string) func(string) bool {
+        return func (s1 string) bool {
+            return strings.HasSuffix(s1, suffix)
+        }
     },
     "map": func(vv ...interface{}) (res map[interface{}]interface{}) {
         res = make(map[interface{}]interface{})
@@ -56,6 +126,16 @@ var HelpfullTemplateFuncs = template.FuncMap{
         }
         
         return
+    },
+    "array": func (vv ...interface{}) []interface{} {
+        return vv  
+    },
+    "setter": func (m map[interface{}]interface{}, key, value interface{}) interface{} {
+        m[key] = value  
+        return value
+    },
+    "getter": func (m map[interface{}]interface{}, key interface{}) interface{} {
+        return m[key]  
     },
     
     // toUpper transform "str str" to "Str<separator>Str"
