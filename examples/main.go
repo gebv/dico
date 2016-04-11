@@ -2,6 +2,9 @@
 //config.toml
 //pkg = "main"
 // errors = ["ErrNotFound", "err not allowed"]
+// [values]
+// foo = "foo"
+// bar = "bar"
 //[struct]
 // name ="FooBarStruct"
 // [[struct.fields]]
@@ -68,7 +71,7 @@ func (f *FooBarStruct) GetBar() v string {
 
 
 func main() {
-    s := &FooBarStruct{"<no value>", "<no value>"}
+    s := &FooBarStruct{"foo", "bar"}
     fmt.Printf("%v", s)
 }
 

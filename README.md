@@ -85,31 +85,31 @@ type FooBarStruct struct {
     // comment
     Foo string `json:"Foo"`  
     
-    // comment 2
+    
     Bar string   
     
 }
 
 // SetFoo set Foo
-func (f *FooBarStruct) SetFoo(v <no value>) {
+func (f *FooBarStruct) SetFoo(v string) {
     f.Foo = v
 }
  
 
 // GetFoo get Foo
-func (f *FooBarStruct) GetFoo() v <no value> {
+func (f *FooBarStruct) GetFoo() v string {
     return f.Foo
 }
  
 
 // SetBar set Bar
-func (f *FooBarStruct) SetBar(v <no value>) {
+func (f *FooBarStruct) SetBar(v string) {
     f.Bar = v
 }
  
 
 // GetBar get Bar
-func (f *FooBarStruct) GetBar() v <no value> {
+func (f *FooBarStruct) GetBar() v string {
     return f.Bar
 }
  
@@ -117,7 +117,7 @@ func (f *FooBarStruct) GetBar() v <no value> {
 
 
 func main() {
-    s := &FooBarStruct{"Foo", "Bar"}
+    s := &FooBarStruct{"foo", "bar"}
     fmt.Printf("%v", s)
 }
 
