@@ -248,13 +248,24 @@ func NewGenerator(args []string, config *Config) (*Generator, error) {
     // }
     
     // parse tempaltes
+    
+    path := os.Getenv("DICO_TEMPLATES")
+    
+    if len(path) > 0 {
+        tpl, err = tpl.ParseGlob(path)
+    
+        if err != nil {
+            return nil, err
+        }    
+    }
+    
     pwd, _ := os.Getwd()
     for _, tplpath := range args[1:]{
         tpl, err = tpl.ParseGlob(pwd + string(os.PathSeparator) + tplpath)
-    }
-    
-    if err != nil {
-        return nil, err
+        
+        if err != nil {
+            return nil, err
+        }
     }
     
     tpl = template.Must(tpl, err)
@@ -555,6 +566,12 @@ func main() {
     if DEBUG {
         fmt.Printf("%v\n", os.Args)
     }
+    
+    dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+    if err != nil {
+            
+    }
+    fmt.Println(dir)
     
     app.Run(os.Args)
 }
