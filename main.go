@@ -11,6 +11,7 @@ import (
     "io/ioutil"
     "text/template"
     "path/filepath"
+    "unicode"
 )
 
 var (
@@ -33,7 +34,110 @@ var (
 )
 
 var HelpfullTemplateFuncs = template.FuncMap{
+    "intersection": func (v interface{}, vv ...interface{}) bool {
+        for _, _v := range vv {
+            if _v == v {
+                return true
+            }
+        }
+        
+        return false
+    },
+    "map": func(vv ...interface{}) (res map[interface{}]interface{}) {
+        res = make(map[interface{}]interface{})
+        
+        if len(vv) == 0 || len(vv) % 2 != 0 {
+            
+            return
+        }
+        
+        for i := 0; i < len(vv); i+=2 {
+            res[vv[i]] = vv[i+1]
+        }
+        
+        return
+    },
     
+    // toUpper transform "str str" to "Str<separator>Str"
+    "toUpper": func (ss ...string) string {
+        if len(ss) == 0 {
+            return ""
+        }
+        
+        res := bytes.NewBufferString("")
+        hasSep := true // first symbol up
+        replace := ""
+        
+        if len(ss) == 2 {
+            replace = ss[1]
+        }
+
+        for index, runeValue := range ss[0] {
+            if !unicode.IsLetter(runeValue) {
+                hasSep = true
+                continue
+            }
+
+            if hasSep {
+                if index > 0 {
+                    res.WriteString(replace)
+                }
+
+                runeValue = unicode.ToUpper(runeValue)
+            }
+
+            res.WriteRune(runeValue)
+
+            hasSep = false
+        }
+
+        return res.String()
+    },
+    // toLower transform "str str" to "str<separator>str"
+    "toLower": func (ss ...string) string {
+        if len(ss) == 0 {
+            return ""
+        }
+        
+        res := bytes.NewBufferString("")
+        hasSep := false
+        replace := ""
+        
+        if len(ss) == 2 {
+            replace = ss[1]
+        }
+
+        for index, runeValue := range ss[0] {
+            if !unicode.IsLetter(runeValue) {
+                hasSep = true
+                continue
+            }
+
+            if unicode.IsUpper(runeValue) {
+
+                runeValue = unicode.ToLower(runeValue)
+                hasSep = true
+            }
+
+            if index > 0 && hasSep {
+                res.WriteString(replace)
+            }
+
+            // IsLower
+            res.WriteRune(runeValue)
+
+            hasSep = false
+        }
+
+        return res.String()
+    },
+    "firstLower": func (s string) string {
+        if len(s) == 0 {
+            return ""
+        }
+        
+        return string(unicode.ToLower([]rune(s)[0]))
+    },
 }
 
 func NewGenerator(args []string, config *Config) (*Generator, error) {
@@ -76,6 +180,10 @@ func NewGenerator(args []string, config *Config) (*Generator, error) {
     tpl = template.Must(tpl, err)
     
     config.TplName = args[0]
+    
+    if DEBUG {
+        fmt.Printf("defined tempaltes: %v\n", tpl.DefinedTemplates())
+    }
     
     return &Generator{config, tpl}, nil
 }
@@ -364,7 +472,9 @@ func main() {
         filepath.Walk(path, analyzeFile(c.Args().Get(1)))
     }
     
-    fmt.Printf("%v\n", os.Args)
+    if DEBUG {
+        fmt.Printf("%v\n", os.Args)
+    }
     
     app.Run(os.Args)
 }
