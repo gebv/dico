@@ -3,6 +3,8 @@ embedded code generator, text generator from templates and сonfigs
 
 Генератор кода, конфигов, текста на основе преднастроек и шаблонов.
 
+[demo](https://s3.amazonaws.com/idheap/ss/ezgif.com-video-to-gif_1.gif)
+
 Для запуска генератора следует выполнить следующую команду
 
 ```
