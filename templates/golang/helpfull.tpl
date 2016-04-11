@@ -16,7 +16,7 @@ func FromJson(obj interface{}, data interface{}) error {
 {{define "setter"}}
 {{- if (intersection .field.type "string" "int64" "float64") }}
 // Set{{.field.name}} set {{.field.name}}
-func ({{ .structname | firstLower }} *{{.structname}}) Set{{.field.name}}(v {{.type}}) {
+func ({{ .structname | firstLower }} *{{.structname}}) Set{{.field.name}}(v {{.field.type}}) {
     {{ .structname | firstLower }}.{{.field.name}} = v
 }
 {{ end }} 
@@ -25,7 +25,7 @@ func ({{ .structname | firstLower }} *{{.structname}}) Set{{.field.name}}(v {{.t
 {{define "getter"}}
 {{- if (intersection .field.type "string" "int64" "float64")  }}
 // Get{{.field.name}} get {{.field.name}}
-func ({{ .structname | firstLower }} *{{.structname}}) Get{{.field.name}}() v {{.type}} {
+func ({{ .structname | firstLower }} *{{.structname}}) Get{{.field.name}}() v {{.field.type}} {
     return {{ .structname | firstLower }}.{{.field.name}}
 }
 {{ end }} 
