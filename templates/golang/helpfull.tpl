@@ -25,7 +25,7 @@ func ({{ .structname | firstLower }} *{{.structname}}) Set{{.field.name}}(v {{.f
 {{- if (hasPrefix .field.type "[]") }}
 // Add{{.field.name}} add element {{.field.name}}
 func ({{ .structname | firstLower }} *{{.structname}}) Add{{.field.name}}(v {{substring .field.type 2}}) {
-    if {{ .structname | firstLower }}.Include{{.field.name}}() {
+    if {{ .structname | firstLower }}.Include{{.field.name}}(v) {
         return
     }
     
