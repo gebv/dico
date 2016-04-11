@@ -1,0 +1,4 @@
+all: build
+build:
+	DICO_TEMPLATES=./templates/golang/* go run main.go ./examples *.go
+	gofmt -w ./examples
