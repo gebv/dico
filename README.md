@@ -11,6 +11,10 @@ embedded code generator, text generator from templates and сonfigs
 dico ./src *.go
 ```
 
+> В случае языка golang рекомендуется после генерации выполнить форматирование
+> `gofmt -w ./src`
+> [gofmt](https://blog.golang.org/go-fmt-your-code)
+
 первым аругментом `./src` указана дириктория с исходным кодом программы.
 `*.go` указана маска по которой будут анализироваться файлы.
 В нашем примере будут подвергнуты все файлы с расширением `go` в дириктории `src`.
