@@ -51,7 +51,7 @@ func (f *FooBarStruct) SetFoo(v string) {
  
 
 // GetFoo get Foo
-func (f *FooBarStruct) GetFoo() v string {
+func (f *FooBarStruct) GetFoo() string {
     return f.Foo
 }
  
@@ -63,7 +63,7 @@ func (f *FooBarStruct) SetBar(v string) {
  
 
 // GetBar get Bar
-func (f *FooBarStruct) GetBar() v string {
+func (f *FooBarStruct) GetBar() string {
     return f.Bar
 }
  

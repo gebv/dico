@@ -25,7 +25,7 @@ func ({{ .structname | firstLower }} *{{.structname}}) Set{{.field.name}}(v {{.f
 {{define "getter"}}
 {{- if (intersection .field.type "string" "int64" "float64")  }}
 // Get{{.field.name}} get {{.field.name}}
-func ({{ .structname | firstLower }} *{{.structname}}) Get{{.field.name}}() v {{.field.type}} {
+func ({{ .structname | firstLower }} *{{.structname}}) Get{{.field.name}}() {{.field.type}} {
     return {{ .structname | firstLower }}.{{.field.name}}
 }
 {{ end }} 
