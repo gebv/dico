@@ -221,7 +221,7 @@ var HelpfullTemplateFuncs = template.FuncMap{
 }
 
 func NewGenerator(args []string, config *Config) (*Generator, error) {
-    if len(args) < 2 {
+    if len(args) == 0 {
         return nil, fmt.Errorf("not valid command arguments %v", args);
     }
     
@@ -566,12 +566,6 @@ func main() {
     if DEBUG {
         fmt.Printf("%v\n", os.Args)
     }
-    
-    dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-    if err != nil {
-            
-    }
-    fmt.Println(dir)
     
     app.Run(os.Args)
 }
