@@ -3,7 +3,7 @@ embedded code generator, text generator from templates and сonfigs
 
 Генератор кода, конфигов, текста на основе преднастроек и шаблонов.
 
-[demo](https://s3.amazonaws.com/idheap/ss/ezgif.com-video-to-gif_1.gif)
+![demo](https://s3.amazonaws.com/idheap/ss/ezgif.com-video-to-gif_1.gif)
 
 Для запуска генератора следует выполнить следующую команду
 
@@ -15,9 +15,9 @@ dico ./src *.go
 `*.go` указана маска по которой будут анализироваться файлы.
 В нашем примере будут подвергнуты все файлы с расширением `go` в дириктории `src`.
 
-* [Описание][#описание]
-* [Шаблоны][#шаблоны]
-* [Примеры][#еxamples]
+* [Описание](#описание)
+* [Шаблоны](#шаблоны)
+* [Примеры](#еxamples)
  
 # Описание
 
