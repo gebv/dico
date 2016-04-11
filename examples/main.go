@@ -1,6 +1,7 @@
 //dico main templates/golang/*
 //config.toml
 //pkg = "main"
+// errors = ["ErrNotFound", "err not allowed"]
 //[values]
 // foo="Foo"
 // bar="Bar"
@@ -12,6 +13,7 @@
 // type = "string"
 // tag = '''json:"Foo"'''
 // [[struct.fields]]
+// comment = "comment 2"
 // name = "Bar"
 // type = "string"
 //config.toml
@@ -27,16 +29,46 @@ import (
 )
 
 
+var ErrNotFound = "ErrNotFound"
+var ErrNotAllowed = "ErrNotAllowed"
+ 
+
+
 
 type FooBarStruct struct {
     
     // comment
     Foo string `json:"Foo"`  
     
-    
+    // comment 2
     Bar string   
     
 }
+
+// SetFoo set Foo
+func (f *FooBarStruct) SetFoo(v <no value>) {
+    f.Foo = v
+}
+ 
+
+// GetFoo get Foo
+func (f *FooBarStruct) GetFoo() v <no value> {
+    return f.Foo
+}
+ 
+
+// SetBar set Bar
+func (f *FooBarStruct) SetBar(v <no value>) {
+    f.Bar = v
+}
+ 
+
+// GetBar get Bar
+func (f *FooBarStruct) GetBar() v <no value> {
+    return f.Bar
+}
+ 
+
 
 
 func main() {
