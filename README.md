@@ -194,6 +194,49 @@ type {{.name}} struct {
 
 # Examples
 
+## Errors constants
+
+Генерация констант с различными типами ошибок.
+
+``` toml
+//dico errors
+//config.toml
+//[[errors]]
+//name="not found"
+//[[errors]]
+//name="unknown"
+//message="unknown error, see details in the log"
+//[[errors]]
+//name="not allowed"
+//[[errors]]
+//name="not supported"
+//config.toml
+```
+
+Шаблон для генерации.
+
+``` smarty
+{{ define "errors" }}
+{{range $error := .errors -}}
+{{$message := (or $error.message (toLower $error.name  "_"))}}
+var Err{{$error.name | toUpper}} = fmt.Errorf("{{$message}}")
+{{ end }}
+{{ end }}
+```
+
+Результат
+
+``` golang
+var ErrNotFound = fmt.Errorf("not_found")
+
+var ErrUnknown = fmt.Errorf("unknown error, see details in the log")
+
+var ErrNotAllowed = fmt.Errorf("not_allowed")
+
+var ErrNotSupported = fmt.Errorf("not_supported")
+```
+
+
 ## nginx настройки
 
 Генерация настроек nginx по [шаблонам](templates)
