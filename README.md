@@ -205,7 +205,8 @@ type {{.name}} struct {
 //name="not found"
 //[[errors]]
 //name="unknown"
-//message="unknown error, see details in the log"
+//message="unknown error"
+//comment="unknown error, see details in the log"
 //[[errors]]
 //name="not allowed"
 //[[errors]]
@@ -218,7 +219,8 @@ type {{.name}} struct {
 ``` smarty
 {{ define "errors" }}
 {{range $error := .errors -}}
-{{$message := (or $error.message (toLower $error.name  "_"))}}
+{{- $message := (or $error.message (toLower $error.name  "_"))}}
+{{- with $error.comment}}// Err{{$error.name | toUpper}} {{ $error.comment }}.{{ end }}
 var Err{{$error.name | toUpper}} = fmt.Errorf("{{$message}}")
 {{ end }}
 {{ end }}
@@ -229,7 +231,8 @@ var Err{{$error.name | toUpper}} = fmt.Errorf("{{$message}}")
 ``` golang
 var ErrNotFound = fmt.Errorf("not_found")
 
-var ErrUnknown = fmt.Errorf("unknown error, see details in the log")
+// ErrUnknown unknown error, see details in the log
+var ErrUnknown = fmt.Errorf("unknown error")
 
 var ErrNotAllowed = fmt.Errorf("not_allowed")
 
